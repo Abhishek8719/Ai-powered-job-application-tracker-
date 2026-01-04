@@ -1,0 +1,43 @@
+# OS / Editor
+.DS_Store
+Thumbs.db
+.vscode/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Dependency directories
+**/node_modules/
+
+# Env files (NEVER commit)
+**/.env
+**/.env.*
+
+# Build outputs
+**/dist/
+**/build/
+**/.turbo/
+**/.cache/
+
+# Vite
+frontend/dist/
+
+# TypeScript
+*.tsbuildinfo
+
+# SQLite / DB files (if you use local db files)
+*.sqlite
+*.sqlite3
+*.db
+
+# Coverage
+coverage/
+
+# Misc
+*.pem
+*.key
