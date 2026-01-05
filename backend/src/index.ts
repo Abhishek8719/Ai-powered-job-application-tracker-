@@ -12,16 +12,25 @@ import { aiRouter } from './routes/ai'
 
 const app = express()        // Create Express application instance 
 
-const corsOrigins = env.CORS_ORIGIN.split(',')
+const allowedOrigins = env.CORS_ORIGIN.split(',')
   .map((s) => s.trim())
   .filter(Boolean)
 
 app.use(
   cors({
-    origin: corsOrigins.length <= 1 ? corsOrigins[0] : corsOrigins,
-    credentials: true
+    origin(origin, callback) {
+      // Allow non-browser clients (curl, server-to-server) with no Origin header.
+      if (!origin) return callback(null, true)
+
+      if (allowedOrigins.includes(origin)) return callback(null, true)
+
+      return callback(new Error(`Not allowed by CORS: ${origin}`))
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
   })
-)
+);
 app.use(cookieParser())                   // Parse cookies from incoming requests
 app.use(express.json({ limit: '1mb' }))   // Parse JSON bodies with a size limit
 

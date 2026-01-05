@@ -4,7 +4,6 @@ import { env } from './env'
 export type JwtPayload = {
   sub: string
 }
-
 export function signUserJwt(userId: string): string {
   const options: SignOptions = {
     expiresIn: env.JWT_EXPIRES_IN as SignOptions['expiresIn']
