@@ -3,14 +3,23 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { z } from 'zod'
 
-// Load environment variables reliably whether the backend is started from:
+// Load backend environment variables reliably whether the backend is started from:
 // - backend/ (common)
 // - repo root via scripts/dev.cjs or other tooling
 //
+// IMPORTANT: We intentionally do NOT load a repo-root `.env` to keep frontend
+// and backend env files separated.
+//
 // We do NOT override already-set environment variables.
 const envCandidates = [
-  path.resolve(process.cwd(), '.env'),
-  path.resolve(process.cwd(), 'backend', '.env')
+  // Works in both TS (tsx) and built JS: __dirname is backend/src or backend/dist
+  path.resolve(__dirname, '..', '.env'),
+
+  // When started from repo root (e.g. via scripts/dev.cjs)
+  path.resolve(process.cwd(), 'backend', '.env'),
+
+  // When started from backend/ directly
+  ...(path.basename(process.cwd()) === 'backend' ? [path.resolve(process.cwd(), '.env')] : [])
 ]
 
 for (const candidate of envCandidates) {
@@ -28,6 +37,7 @@ const EnvSchema = z.object({
 
   COOKIE_NAME: z.string().default('jat'),
   COOKIE_SECURE: z.coerce.boolean().default(false),
+  COOKIE_SAMESITE: z.enum(['lax', 'strict', 'none']).default('lax'),
 
   DB_HOST: z.string(),
   DB_PORT: z.coerce.number().default(3306),

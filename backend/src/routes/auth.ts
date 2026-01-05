@@ -29,10 +29,12 @@ const LoginSchema = z.object({
 })
 
 function setAuthCookie(res: any, jwt: string) {
+  const sameSite = env.COOKIE_SAMESITE
   res.cookie(env.COOKIE_NAME, jwt, {
     httpOnly: true,
-    sameSite: 'lax',
-    secure: env.COOKIE_SECURE,
+    sameSite,
+    // Browsers require `Secure` when `SameSite=None`.
+    secure: sameSite === 'none' ? true : env.COOKIE_SECURE,
     path: '/'
   })
 }
@@ -140,6 +142,11 @@ authRouter.post('/login', async (req, res) => {
 })
 
 authRouter.post('/logout', (req, res) => {
-  res.clearCookie(env.COOKIE_NAME, { path: '/' })
+  const sameSite = env.COOKIE_SAMESITE
+  res.clearCookie(env.COOKIE_NAME, {
+    path: '/',
+    sameSite,
+    secure: sameSite === 'none' ? true : env.COOKIE_SECURE
+  })
   return res.json({ ok: true })
 })

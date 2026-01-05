@@ -1,6 +1,7 @@
 import dotenv from 'dotenv'
+import path from 'node:path'
 
-dotenv.config()
+dotenv.config({ path: path.resolve(process.cwd(), '.env') })
 
 const key = process.env.OPENAI_API_KEY ?? ''
 const model = process.env.OPENAI_MODEL ?? '(default)'
